@@ -108,7 +108,7 @@ class Image(db.Model):
         return f"Image('{self.filename}')"
 
 
-def fake_sender(): 
+def fake_sender():
     app.app_context().push()
     randomval = randint(1, 100000000)
     ide = randomvalue(id=randomval)
@@ -383,55 +383,6 @@ def meet_create():
     else:
         return render_template('create-meet.html')
 
-
-'''class_5 = Class.query.filter_by(name="5").first()
-class_6 = Class.query.filter_by(name="6").first()
-class_7 = Class.query.filter_by(name="7").first()
-class_8 = Class.query.filter_by(name="8").first()
-class_9 = Class.query.filter_by(name="9").first()
-
-if not class_5:
-    class_5 = Class(name="5")
-    db.session.add(class_5)
-if not class_6:
-    class_6 = Class(name="6")
-    db.session.add(class_6)
-if not class_7:
-    class_7 = Class(name="7")
-    db.session.add(class_7)
-if not class_8:
-    class_8 = Class(name="8")
-    db.session.add(class_8)
-if not class_9:
-    class_9 = Class(name="9")
-    db.session.add(class_9)
-
-db.session.commit()
-
-class_5 = Class.query.filter_by(name="5").first()
-class_6 = Class.query.filter_by(name="6").first()
-class_7 = Class.query.filter_by(name="7").first()
-class_8 = Class.query.filter_by(name="8").first()
-class_9 = Class.query.filter_by(name="9").first()
-
-if not class_5:
-    class_5 = Class(name="5")
-    db.session.add(class_5)
-if not class_6:
-    class_6 = Class(name="6")
-    db.session.add(class_6)
-if not class_7:
-    class_7 = Class(name="7")
-    db.session.add(class_7)
-if not class_8:
-    class_8 = Class(name="8")
-    db.session.add(class_8)
-if not class_9:
-    class_9 = Class(name="9")
-    db.session.add(class_9)
-
-db.session.commit()
-'''
 if __name__ == '__main__':
     app.run(debug=True)
 
