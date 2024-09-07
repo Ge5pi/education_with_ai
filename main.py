@@ -22,11 +22,11 @@ app = Flask(__name__)
 app.app_context().push()
 ssl_args = {'ssl_ca': 'static/ca.pem'}
 app.config['SECRET_KEY'] = 'a really really really really long secret key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://avnadmin:AVNS_L0R9hOLeXBv9wkirOjP@mysql-306be6a8-enactus.a' \
-                                        '.aivencloud.com:26361/defaultdb?ssl_key=static/ca.pem '
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://avnadmin:AVNS_Dal6Z8qW-7uIbLWO5ze@mysql-48983cc-nazarenko-32e6.a' \
+                                        '.aivencloud.com:17657/defaultdb?ssl_key=static/ca.pem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 engine = create_engine(
-    "mysql+pymysql://avnadmin:AVNS_L0R9hOLeXBv9wkirOjP@mysql-306be6a8-enactus.a.aivencloud.com:26361/defaultdb?ssl-mode=REQUIRED",
+    "mysql+pymysql://avnadmin:AVNS_Dal6Z8qW-7uIbLWO5ze@mysql-48983cc-nazarenko-32e6.a.aivencloud.com:17657/defaultdb?ssl-mode=REQUIRED",
     connect_args=ssl_args)
 db = SQLAlchemy(app)
 mail = Mail(app)
@@ -260,6 +260,26 @@ def get_course_content(course_id):
                 else:
                     print(type(image_id_str))
                     line = line.replace(f"<{image_id_str}>", "")
+
+    for i, element in enumerate(description):
+        while "$frame$" in element and "$/frame$" in element:
+            start_index = element.find("$frame$")+6
+            end_index = element.find("$/frame$")
+            new_el = element[start_index + 1:end_index]
+            element = f'$frame_class><div class="frame_class">{new_el}</div></frame_class$'
+            print(element)
+
+            description[i] = element
+    for i, element in enumerate(description):
+        while "|b" in element and 'b|' in element:
+            start_index = element.find("|b") + 1
+            end_index = element.find("b|")
+            new_el = element[start_index + 1:end_index]
+            element = f'|span class="bold">{new_el}</span|'
+            print(element)
+
+            description[i] = element
+
     content = {
         'title': course.title,
         'description': description

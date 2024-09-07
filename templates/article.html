@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="..\..\static\header.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script async data-id="3887519629" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
     <script>
         $(document).ready(function () {
             var initialCourseId = $(".side-menu li:first-child a").attr("href");
@@ -34,13 +40,25 @@
 
                                 var imageId = value.substring(1, value.length - 1);
                                 console.log(imageId)
-                                descriptionHtml = '<' + imageId + '>';
-                            } else {
-
-                                descriptionHtml += "<p>" + value + "</p>";
+                                descriptionHtml += '<' + imageId + '>';
                             }
+                            else if (value.startsWith("$")){
+                                var contentD = value.substring(1, value.length-1);
+
+                                descriptionHtml += '<' + contentD + '>'
+                                console.log(descriptionHtml)
+                            }
+                            else if (value.startsWith("|")){
+                                var contentB = value.substring(1, value.length-1);
+                                descriptionHtml += '<' + contentB + '>'
+                                console.log(descriptionHtml)
+                            }
+                            else{
+                            descriptionHtml += "<p>" + value + "</p>"}
+
                         });
-                        $("#course-description").html(descriptionHtml);
+                        console.log("1")
+                        $("#course-description").append(descriptionHtml);
                     },
                     error: function () {
                         console.log("Еррор");
@@ -75,6 +93,7 @@
           </ul>
         </div>
     </nav>
+
     
     <div class="sec-center">
       <input class="dropdown" type="checkbox" id="dropdown" name="dropdown"/>
@@ -102,6 +121,7 @@
       <div class="whole">
         <div class="sidebar">
             <div class="side-text">
+
                 <h2>{{subject.name}}</h2>
                 <h3>{{subject.class_id+4}} КЛАСС</h3>
             </div>

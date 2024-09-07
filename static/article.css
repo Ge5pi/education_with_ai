@@ -18,7 +18,7 @@ body{
 }
 
 .sidebar{
-width: 350px;
+    width: 350px;
   padding-bottom: 10px;
   position: sticky;
   max-width: 40%;
@@ -123,6 +123,30 @@ h3{
   border-top-left-radius: 15px;
 }
 
+.frame_class{
+    border: 3px solid #0c7489;
+    border-radius: 16px;
+    padding: 20px;
+    width: fit-content;
+    align-self: center;
+    margin: 10px;
+    font-size: 1.5rem;
+    font-style: italic;
+    font-weight: 500;
+}
+
+frame_class{
+    display:flex;
+    justify-content: center;
+}
+
+#course-description p{
+    font-size: 1.3rem;
+}
+
+#course-description{
+    line-height: 1.7;
+}
 
 .side-text h2{
   margin: 15px;
@@ -138,6 +162,12 @@ h3{
     width: 60%;
 }
 
+
+.bold{
+    font-size: 1.4rem;
+    font-weight: bold;
+
+}
 
 @media screen and (max-width: 550px) {
   h3{
@@ -172,3 +202,4 @@ h3{
     margin: 0;
   }
 }
+
