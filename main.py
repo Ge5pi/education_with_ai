@@ -27,7 +27,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://avnadmin:AVNS_Dal6Z8qW-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 engine = create_engine(
     "mysql+pymysql://avnadmin:AVNS_Dal6Z8qW-7uIbLWO5ze@mysql-48983cc-nazarenko-32e6.a.aivencloud.com:17657/defaultdb?ssl-mode=REQUIRED",
-    connect_args=ssl_args)
+    connect_args=ssl_args, pool_size=20, max_overflow=0)
 db = SQLAlchemy(app)
 mail = Mail(app)
 login_manager = LoginManager(app)
@@ -106,48 +106,17 @@ class Image(db.Model):
 
     def __repr__(self):
         return f"Image('{self.filename}')"
-
-
-def fake_sender():
-    app.app_context().push()
-    randomval = randint(1, 100000000)
-    ide = randomvalue(id=randomval)
-    print(ide)
-    try:
-        db.session.add(ide)
-        db.session.commit()
-        try:
-            randomvalue.query.filter_by(id=randomval).delete()
-            db.session.commit()
-        except:
-            print("NOOOOOOO")
-    except:
-        print("Oh hell no, man, what the fuck")
-
-
-def shedule(func, nth_sec):
-    now_sec = datetime.now().second
-    wait = (60 + nth_sec - now_sec) % 60
-
-    Timer(wait, func).start()
-    Timer(wait + 60, lambda: shedule(func, nth_sec)).start()
-
-
-shedule(fake_sender, 10)
-print("ok")
-
-
 @app.route("/index", methods=['GET', 'POST'])
 def index():
     form = LoginForm(request.form)
-    print("kekw")
+    print("login page opened")
     if request.method == "POST":
         print("POST")
         for l in form:
             print(l)
         print(form.errors)
         db.session.rollback()
-        print("LOGIN LETSGO")
+        print("bd push start")
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             print("START")
@@ -157,14 +126,14 @@ def index():
         else:
             flash('Неверный email или пароль', 'error')
     else:
-        print("POMOOGITE BLYAT")
+        print("login get")
     return render_template('index.html', form=form)
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm(request.form)
-    print("HUUUU")
+    print("register page opened")
     if request.method == "POST":
         print("POST")
         for l in form:
@@ -172,7 +141,7 @@ def register():
         print(form.errors)
         try:
             db.session.rollback()
-            print("REG LET'S GO")
+            print("reg start")
             user = User(email=form.email.data, login=form.login.data)
             user.set_password(form.password.data)
             user.id = randint(1, 100000000)
@@ -189,7 +158,7 @@ def register():
             db.session.rollback()
             flash('Ошибка регистрации. Возможно, такой пользователь уже существует.', 'error')
     else:
-        print("TA TI SAEBAL")
+        print("REG GET")
     return render_template('register.html', form=form)
 
 
