@@ -358,6 +358,7 @@ def meet_create():
             possible_days = possible_days + i
         clas = request.form['class']
         possible_days = possible_days + ":10"
+        #boot
         ides = randint(1, 1000000000)
         use = usee(id=ides, quote=quote, topic=topic, possible_days=possible_days, clas=clas, confirmed=0, email=email,
                    date=datetime.now())
