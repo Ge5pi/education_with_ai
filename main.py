@@ -314,6 +314,7 @@ def meets1():
             db.session.commit()
             return redirect("/meets-subj1")
         except:
+            db.session.rollback()
             return "При добавлении ссылки произошла ошибка"
     else:
         questions = usee.query.order_by(usee.date.desc()).all()
