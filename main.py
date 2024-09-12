@@ -315,7 +315,7 @@ def meets1():
             return redirect("/meets-subj1")
         except:
             db.session.rollback()
-            return "При добавлении ссылки произошла ошибка"
+            flash("При добавлении ссылки произошла ошибка", 'error')
     else:
         questions = usee.query.order_by(usee.date.desc()).all()
         return render_template('meets.html', questions=questions)
