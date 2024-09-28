@@ -1,0 +1,61 @@
+body{
+    display: grid;
+    height: 100vh;
+
+}
+
+#question-container{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    position: absolute;
+    align-self: center;
+    justify-self: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.subjects {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    position: absolute;
+    align-self: center;
+    justify-self: center;
+    justify-content: center;
+
+}
+
+.subject {
+    position: relative;
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.classes {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.subject:hover .classes {
+    display: block;
+}
+
+.classes a {
+    display: block;
+    padding: 5px;
+    text-decoration: none;
+    color: black;
+}
+
+.classes a:hover {
+    background-color: #d0d0d0;
+}

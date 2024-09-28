@@ -33,6 +33,12 @@ mail = Mail(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'index'
 
+from openai import OpenAI
+
+client = OpenAI(
+      api_key="sk-srieKnhLV9oawr9CgpyPAK5oxruFSkITpNA1gFQbL9T3BlbkFJvFJi6buROHV0ifGnhWhFn89iYPTJrUegQevJzOeYAA"
+)
+
 
 
 

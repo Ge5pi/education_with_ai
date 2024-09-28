@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="..\..\static\header.css">
+    <title>Document</title>
+</head>
+<body>
+<nav>
+    <div class="wrapper">
+        <div class="logo"><a href="/"><img src="..\..\static\logo.png" alt=""></a></div>
+        <ul class="nav-links">
+            <li><a href="/meets-subj1">Консультации</a></li>
+            <li>
+                <a href="/subjects" class="desktop-item">Предметы</a>
+            </li>
+            <li><a href="/faq">FAQ</a></li>
+
+            <li><a href="/notifications">Уведомления</a></li>
+        </ul>
+        <ul class="nav-links">
+            {% if not(current_user.is_authenticated) %}
+            <li>
+                <div class="Log"><a href="/index">Вход</a></div>
+            </li>
+            <li>
+                <div class="Sign"><a href="/register">Регистрация</a></div>
+            </li>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <li>
+                <div><a href="/logout">Выход</a></div>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div id="question-container">
+        <h1 id="question">{{ question[0] }}</h1>
+        <div id="answers">
+            <button class="answer-btn" data-answer="А">{{ question[1] }}</button>
+            <button class="answer-btn" data-answer="Б">{{ question[2] }}</button>
+            <button class="answer-btn" data-answer="В">{{ question[3] }}</button>
+            <button class="answer-btn" data-answer="Г">{{ question[4] }}</button>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const selectedAnswer = this.dataset.answer;
+
+                // Отправляем выбранный ответ через AJAX
+                fetch(window.location.href, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ selected_answer: selectedAnswer })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Обновляем вопрос и варианты ответов на странице
+                    document.getElementById('question').textContent = data.question;
+                    const answerButtons = document.querySelectorAll('.answer-btn');
+                    answerButtons[0].textContent = `А: ${data.answers[0]}`;
+                    answerButtons[1].textContent = `Б: ${data.answers[1]}`;
+                    answerButtons[2].textContent = `В: ${data.answers[2]}`;
+                    answerButtons[3].textContent = `Г: ${data.answers[3]}`;
+
+                    // Выводим информацию о прогрессе
+                    console.log(`Текущий прогресс: ${data.progress}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
