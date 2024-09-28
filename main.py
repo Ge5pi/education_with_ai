@@ -340,6 +340,7 @@ def header():
 @app.route("/")
 @app.route("/main")
 def about():
+    print(os.getenv("AA"))
     return render_template('main.html')
 
 
