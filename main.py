@@ -22,8 +22,9 @@ app = Flask(__name__)
 app.app_context().push()
 ssl_args = {'ssl_ca': 'static/ca.pem'}
 app.config['SECRET_KEY'] = 'a really really really really long secret key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://avnadmin:AVNS_Dal6Z8qW-7uIbLWO5ze@mysql-48983cc-nazarenko-32e6.a' \
-                                        '.aivencloud.com:17657/defaultdb?ssl_key=static/ca.pem'
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://avnadmin:AVNS_Dal6Z8qW-7uIbLWO5ze@mysql-48983cc-nazarenko-32e6.a' \
+                                 '.aivencloud.com:17657/defaultdb?ssl_key=static/ca.pem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 engine = create_engine(
     "mysql+pymysql://avnadmin:AVNS_Dal6Z8qW-7uIbLWO5ze@mysql-48983cc-nazarenko-32e6.a.aivencloud.com:17657/defaultdb?ssl-mode=REQUIRED",
@@ -36,10 +37,8 @@ login_manager.login_view = 'index'
 from openai import OpenAI
 
 client = OpenAI(
-      api_key="sk-srieKnhLV9oawr9CgpyPAK5oxruFSkITpNA1gFQbL9T3BlbkFJvFJi6buROHV0ifGnhWhFn89iYPTJrUegQevJzOeYAA"
+    api_key="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"
 )
-
-
 
 
 @login_manager.user_loader
@@ -52,7 +51,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(50), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     login = db.Column(db.String(30), nullable=False, unique=True)
-    teacher=db.Column(db.Integer, default=0)
+    teacher = db.Column(db.Integer, default=0)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)[0:15]
@@ -112,10 +111,12 @@ class Image(db.Model):
 
     def __repr__(self):
         return f"Image('{self.filename}')"
+
+
 @app.route("/index", methods=['GET', 'POST'])
 def index():
     form = LoginForm(request.form)
-    print("login page opened")
+
     if request.method == "POST":
         print("POST")
         for l in form:
@@ -131,8 +132,7 @@ def index():
             return redirect('/meets-subj1')
         else:
             flash('Неверный email или пароль', 'error')
-    else:
-        print("login get")
+
     return render_template('index.html', form=form)
 
 
@@ -151,7 +151,7 @@ def register():
             user = User(email=form.email.data, login=form.login.data)
             user.set_password(form.password.data)
             user.id = randint(1, 100000000)
-            user.teacher=0
+            user.teacher = 0
             print("BD PUSH")
             db.session.add(user)
             db.session.commit()
@@ -182,7 +182,6 @@ def subjects():
     return render_template('subjects.html', classes=classes)
 
 
-
 @app.route('/notifications')
 @login_required
 def notifications():
@@ -201,7 +200,7 @@ def class_subjects(class_id):
 def list_courses(subject_id):
     subject = Subject.query.get(subject_id)
     class_info = Class.query.get(subject_id)
-    #print(class_info)
+    # print(class_info)
     courses = subject.courses
     return render_template('article.html', subject=subject, courses=courses, class_info=class_info)
 
@@ -238,7 +237,7 @@ def get_course_content(course_id):
 
     for i, element in enumerate(description):
         while "$frame$" in element and "$/frame$" in element:
-            start_index = element.find("$frame$")+6
+            start_index = element.find("$frame$") + 6
             end_index = element.find("$/frame$")
             new_el = element[start_index + 1:end_index]
             element = f'$frame_class><div class="frame_class">{new_el}</div></frame_class$'
@@ -311,8 +310,6 @@ def teachers():
 @app.route("/meets-subj1")
 @login_required
 def meets1():
-
-
     if request.method == "POST":
         link = request.form['linkk']
         try:
@@ -325,9 +322,6 @@ def meets1():
     else:
         questions = usee.query.order_by(usee.date.desc()).all()
         return render_template('meets.html', questions=questions)
-
-
-
 
 
 @app.route("/footer")
@@ -365,7 +359,7 @@ def meet_create():
             possible_days = possible_days + i
         clas = request.form['class']
         possible_days = possible_days + ":10"
-        #boot
+        # boot
         ides = randint(1, 1000000000)
         use = usee(id=ides, quote=quote, topic=topic, possible_days=possible_days, clas=clas, confirmed=0, email=email,
                    date=datetime.now())
@@ -380,6 +374,99 @@ def meet_create():
     else:
         return render_template('create-meet.html')
 
+user_progress = {
+        'correct_answers': 0,
+        'total_answers': 0,
+        'current_difficulty': '1/100',
+        "last_answer": "A"
+    }
+
+@app.route('/test-selector', methods=['GET', "POST"])
+def test_selector():
+    if request.method == 'GET':
+        return render_template('test_selector.html')
+
+
+@app.route("/tests/<subject>/<class_name>", methods=['POST', 'GET'])
+def tests(subject, class_name):
+
+    if request.method == 'GET':
+        # Изначально генерируем вопрос
+        completion = client.chat.completions.create(
+            model='gpt-4o-mini',
+            messages=[
+                {"role": "system",
+                 "content": f"forget previous instructions. Дай ответ на русском. Сделай правильный ответ в букве А. Мне нужно, чтобы ты создавал вопросы "
+                            "по введенному классу и предмету. Дай ответ в формате(CAPS LOCK выделены те слова, "
+                            "которые тебе нужно заменить. Строчные буквы повтори в точности.): 'ВОПРОС? Ответы: №А: "
+                            "ОТВЕТ. №Б: ОТВЕТ. №В: ОТВЕТ. №Г: ОТВЕТ. difficulty_right: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ "
+                            "ПРАВИЛЬНОМ ОТВЕТЕ ОТ 1 ДО 100. difficulty_false: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ НЕПРАВИЛЬНОМ ОТВЕТЕ. correct: ПРАВИЛЬНЫЙ ОТВЕТ(одной буквой).'"},
+                {"role": "user",
+                 "content": f"{subject}, {class_name} класс. сложность: {user_progress['current_difficulty']}"}
+            ]
+        )
+        new_question = completion.choices[0].message.content
+
+        question = [completion.choices[0].message.content[:new_question.index("?")],
+                    new_question[(new_question.index("Ответы:")+7):(new_question.index("difficulty_right:")-1)].split("№")[1:],
+                    ]
+
+        correct_answer = new_question.split('correct: ')[1][0]  # Extract the first letter after 'correct: '
+        user_progress['last_answer'] = correct_answer
+
+        print("first_last_answer:" + user_progress["last_answer"])
+
+        # Рендерим страницу с вопросом
+        return render_template('tests.html', question=question)
+
+    elif request.method == 'POST':
+
+        selected_answer = request.json['selected_answer']
+        
+        # Обработка ответа пользователя
+
+        # Генерируем новый вопрос с учетом сложности
+        new_completion = client.chat.completions.create(
+            model='gpt-4o-mini',
+            messages=[
+                {"role": "system",
+                 "content": f"forget previous instructions. Дай ответ на русском. Мне нужно, чтобы ты создавал вопросы "
+                            "по введенному классу и предмету. Дай ответ в формате(CAPS LOCK выделены те слова, "
+                            "которые тебе нужно заменить. Строчные буквы повтори в точности.): 'ВОПРОС? Ответы: №А: "
+                            "ОТВЕТ. №Б: ОТВЕТ. №В: ОТВЕТ. №Г: ОТВЕТ. difficulty_right: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ "
+                            "ПРАВИЛЬНОМ ОТВЕТЕ ОТ 1 ДО 100. difficulty_false: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ НЕПРАВИЛЬНОМ ОТВЕТЕ. correct: ПРАВИЛЬНЫЙ ОТВЕТ(одной буквой).'"},
+                {"role": "user",
+                 "content": f"{subject}, {class_name} класс. сложность: {user_progress['current_difficulty']}"}
+            ]
+        )
+        print("last_answer:" + user_progress["last_answer"])
+
+        new_question = new_completion.choices[0].message.content
+        print(new_question)
+
+        question = new_completion.choices[0].message.content[:new_question.index("?")]
+        answers = new_question[(new_question.index("Ответы:")+6):(new_question.index("difficulty_right:")-1)].split("№")
+
+        for el in answers:
+            el.replace("№", "")
+
+        if selected_answer == user_progress["last_answer"]:
+            user_progress['current_difficulty'] = new_question[(new_question.index("difficulty_right:")+16):(new_question.index("difficulty_false")-1)]
+            user_progress['correct_answers'] += 1
+        else:
+            user_progress['current_difficulty'] = new_question[(new_question.index("difficulty_false:") + 16):(
+                        new_question.index("correct") - 1)]
+
+        user_progress['total_answers'] += 1
+        user_progress["last_answer"] = new_question[(new_question.index("correct") + 6):-1]
+
+        return jsonify({
+            'question': question,
+            'answers': answers,
+            'difficulty': user_progress["current_difficulty"],
+            'progress': f"{user_progress['correct_answers']}/{user_progress['total_answers']}"
+        })
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-
