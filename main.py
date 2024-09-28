@@ -13,6 +13,7 @@ from threading import Timer
 import time
 from random import randrange, randint
 import threading
+import os
 
 pymysql.install_as_MySQLdb()
 import json
@@ -37,7 +38,7 @@ login_manager.login_view = 'index'
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="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"
+    api_key=os.getenv('API_KEY')
 )
 
 
@@ -374,41 +375,54 @@ def meet_create():
     else:
         return render_template('create-meet.html')
 
+
 user_progress = {
-        'correct_answers': 0,
-        'total_answers': 0,
-        'current_difficulty': '1/100',
-        "last_answer": "A"
-    }
+    'correct_answers': 0,
+    'total_answers': 0,
+    'current_difficulty': '50/100',
+    "last_answer": "A",
+}
+
 
 @app.route('/test-selector', methods=['GET', "POST"])
 def test_selector():
+    user_progress['correct_answers'] = 0
+    user_progress['total_answers'] = 0
+    user_progress['current_difficulty'] = '50/100'
+    user_progress['last_answer'] = 'А'
     if request.method == 'GET':
         return render_template('test_selector.html')
 
 
 @app.route("/tests/<subject>/<class_name>", methods=['POST', 'GET'])
 def tests(subject, class_name):
-
     if request.method == 'GET':
         # Изначально генерируем вопрос
         completion = client.chat.completions.create(
             model='gpt-4o-mini',
             messages=[
                 {"role": "system",
-                 "content": f"forget previous instructions. Дай ответ на русском. Сделай правильный ответ в букве А. Мне нужно, чтобы ты создавал вопросы "
-                            "по введенному классу и предмету. Дай ответ в формате(CAPS LOCK выделены те слова, "
-                            "которые тебе нужно заменить. Строчные буквы повтори в точности.): 'ВОПРОС? Ответы: №А: "
-                            "ОТВЕТ. №Б: ОТВЕТ. №В: ОТВЕТ. №Г: ОТВЕТ. difficulty_right: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ "
-                            "ПРАВИЛЬНОМ ОТВЕТЕ ОТ 1 ДО 100. difficulty_false: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ НЕПРАВИЛЬНОМ ОТВЕТЕ. correct: ПРАВИЛЬНЫЙ ОТВЕТ(одной буквой).'"},
+                 "content": f"forget previous instructions. Дай ответ на русском если предметом не является "
+                            f"английский язык. Иначе, дай ответ на английском Сделай правильный ответ в букве А. Мне "
+                            f"нужно, чтобы ты создавал вопросы "
+                            "по введенному классу и предмету. Для английского языка задавай вопросы по словарному "
+                            "запасу, грамматике и пунктуации. Для математики можешь задавать любые математические "
+                            "примеры, которые соответствуют сложности и введенному классу. Для математики особенно "
+                            "сильно проверяй решение вопросов. Для информатики задавай любые вопросы, касающиеся "
+                            "программирования, устройства компьютера и др. Для всех предметов задавай вопросы, "
+                            "которые соответствуют сложности и классу. Для физики задавай задачи и вопросы про "
+                            "величины, др. Для химии, также, задавай вопросы, связанные с химией и соответствующие "
+                            "сложности и классу. Старайся не повторять вопросы, для этого старайся задавать вопросы "
+                            "из огромного списка, чтобы уменьшить вероятность повторения. Дай ответ в формате(CAPS LOCK выделены те слова, которые тебе нужно заменить. Строчные буквы повтори в точности.): 'ВОПРОС? Ответы: №А: ОТВЕТ. №Б: ОТВЕТ. №В: ОТВЕТ. №Г: ОТВЕТ. difficulty_right: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ ПРАВИЛЬНОМ ОТВЕТЕ ОТ 1 ДО 100(сложность должна быть увеличена). difficulty_false: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ НЕПРАВИЛЬНОМ ОТВЕТЕ(сложность должна быть снижена). correct: ПРАВИЛЬНЫЙ ОТВЕТ(одной буквой).'"},
                 {"role": "user",
                  "content": f"{subject}, {class_name} класс. сложность: {user_progress['current_difficulty']}"}
             ]
         )
         new_question = completion.choices[0].message.content
 
-        question = [completion.choices[0].message.content[:new_question.index("?")],
-                    new_question[(new_question.index("Ответы:")+7):(new_question.index("difficulty_right:")-1)].split("№")[1:],
+        question = [completion.choices[0].message.content[:new_question.index("Ответы")],
+                    new_question[
+                    (new_question.index("Ответы:") + 7):(new_question.index("difficulty_right:") - 1)].split("№")[1:],
                     ]
 
         correct_answer = new_question.split('correct: ')[1][0]  # Extract the first letter after 'correct: '
@@ -417,12 +431,13 @@ def tests(subject, class_name):
         print("first_last_answer:" + user_progress["last_answer"])
 
         # Рендерим страницу с вопросом
-        return render_template('tests.html', question=question)
+        return render_template('tests.html', question=question, class_name=class_name, subject=subject,
+                               difficulty=user_progress["current_difficulty"])
 
     elif request.method == 'POST':
 
         selected_answer = request.json['selected_answer']
-        
+
         # Обработка ответа пользователя
 
         # Генерируем новый вопрос с учетом сложности
@@ -430,11 +445,17 @@ def tests(subject, class_name):
             model='gpt-4o-mini',
             messages=[
                 {"role": "system",
-                 "content": f"forget previous instructions. Дай ответ на русском. Мне нужно, чтобы ты создавал вопросы "
-                            "по введенному классу и предмету. Дай ответ в формате(CAPS LOCK выделены те слова, "
-                            "которые тебе нужно заменить. Строчные буквы повтори в точности.): 'ВОПРОС? Ответы: №А: "
-                            "ОТВЕТ. №Б: ОТВЕТ. №В: ОТВЕТ. №Г: ОТВЕТ. difficulty_right: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ "
-                            "ПРАВИЛЬНОМ ОТВЕТЕ ОТ 1 ДО 100. difficulty_false: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ НЕПРАВИЛЬНОМ ОТВЕТЕ. correct: ПРАВИЛЬНЫЙ ОТВЕТ(одной буквой).'"},
+                 "content": f"forget previous instructions. Дай ответ на русском если предметом не является "
+                            f"английский язык, иначе дай ответ на английском. Мне нужно, чтобы ты создавал вопросы "
+                            "по введенному классу и предмету. Для английского языка задавай вопросы по словарному "
+                            "запасу, грамматике и пунктуации. Для математики можешь задавать любые математические "
+                            "примеры, которые соответствуют сложности и введенному классу. Для математики особенно "
+                            "сильно проверяй решение вопросов. Для информатики задавай любые вопросы, касающиеся "
+                            "программирования, устройства компьютера и др. Для всех предметов задавай вопросы, "
+                            "которые соответствуют сложности и классу. Для физики задавай задачи и вопросы про "
+                            "величины, др. Для химии, также, задавай вопросы, связанные с химией и соответствующие "
+                            "сложности и классу. Старайся не повторять вопросы, для этого старайся задавать вопросы "
+                            "из огромного списка, чтобы уменьшить вероятность повторения. Дай ответ в формате(CAPS LOCK выделены те слова, которые тебе нужно заменить. Строчные буквы повтори в точности.): 'ВОПРОС? Ответы: №А: ОТВЕТ. №Б: ОТВЕТ. №В: ОТВЕТ. №Г: ОТВЕТ. difficulty_right: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ ПРАВИЛЬНОМ ОТВЕТЕ ОТ 1 ДО 100(сложность должна быть увеличена). difficulty_false: СЛОЖНОСТЬ СЛЕДУЮЩЕГО ВОПРОСА ПРИ НЕПРАВИЛЬНОМ ОТВЕТЕ(сложность должна быть снижена). correct: ПРАВИЛЬНЫЙ ОТВЕТ(одной буквой).'"},
                 {"role": "user",
                  "content": f"{subject}, {class_name} класс. сложность: {user_progress['current_difficulty']}"}
             ]
@@ -444,27 +465,32 @@ def tests(subject, class_name):
         new_question = new_completion.choices[0].message.content
         print(new_question)
 
-        question = new_completion.choices[0].message.content[:new_question.index("?")]
-        answers = new_question[(new_question.index("Ответы:")+6):(new_question.index("difficulty_right:")-1)].split("№")
+        question = new_completion.choices[0].message.content[:new_question.index("Ответы")]
+        answers = new_question[(new_question.index("Ответы:") + 6):(new_question.index("difficulty_right:") - 1)].split(
+            "№")
 
         for el in answers:
             el.replace("№", "")
 
         if selected_answer == user_progress["last_answer"]:
-            user_progress['current_difficulty'] = new_question[(new_question.index("difficulty_right:")+16):(new_question.index("difficulty_false")-1)]
+            user_progress['current_difficulty'] = new_question[(new_question.index("difficulty_right:") + 16):(
+                        new_question.index("difficulty_false") - 1)]
             user_progress['correct_answers'] += 1
         else:
             user_progress['current_difficulty'] = new_question[(new_question.index("difficulty_false:") + 16):(
-                        new_question.index("correct") - 1)]
+                    new_question.index("correct") - 1)]
 
         user_progress['total_answers'] += 1
-        user_progress["last_answer"] = new_question[(new_question.index("correct") + 6):-1]
+        correct_answer = new_question.split('correct: ')[1][0]
+        user_progress["last_answer"] = correct_answer
 
         return jsonify({
             'question': question,
             'answers': answers,
             'difficulty': user_progress["current_difficulty"],
-            'progress': f"{user_progress['correct_answers']}/{user_progress['total_answers']}"
+            'progress': f"{user_progress['correct_answers']}/{user_progress['total_answers']}",
+            'all': user_progress['total_answers'],
+            'right': user_progress['correct_answers'],
         })
 
 

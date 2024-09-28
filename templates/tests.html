@@ -39,17 +39,65 @@
         </ul>
     </div>
 </nav>
-<div id="question-container">
-        <h1 id="question">{{ question[0] }}</h1>
-        <div id="answers">
+<!--<div id="question-container">
+    <h1 id="question1">{{ question[0] }}</h1>
+    <div id="answers1">
+        <button class="answer-btn" data-answer="А">{{ question[1][0][2:]}}</button>
+        <button class="answer-btn" data-answer="Б">{{ question[1][1][2:]}}</button>
+        <button class="answer-btn" data-answer="В">{{ question[1][2][2:]}}</button>
+        <button class="answer-btn" data-answer="Г">{{ question[1][3][2:]}}</button>
+    </div>
+</div>-->
+
+<div class="testContainer" id="testContainer">
+
+    <div class="upperBar">
+        <div class="headerTest">
+        <span class="subjectHead">
+            {{subject}}
+        </span>
+            <span class="numberClass">
+                {{class_name}}
+        </span>
+        </div>
+
+        <span class="total" id="total">Прогресс: 0/0</span>
+
+    </div>
+
+
+    <div class="questionBody">
+        <h3 class="quest" id="question">
+            {{ question[0] }}
+        </h3>
+        <div class="answers" id="answers">
             <button class="answer-btn" data-answer="А">{{ question[1][0][2:]}}</button>
             <button class="answer-btn" data-answer="Б">{{ question[1][1][2:]}}</button>
             <button class="answer-btn" data-answer="В">{{ question[1][2][2:]}}</button>
             <button class="answer-btn" data-answer="Г">{{ question[1][3][2:]}}</button>
         </div>
+        <div class="buttonsField">
+            <button class="close" id="close">ЗАВЕРШИТЬ</button>
+        </div>
     </div>
 
-    <script>
+</div>
+
+
+<div class="results" id="results">
+    <h3 class="resText" id="diff"></h3>
+    <h3 class="resText" id="totalRes"></h3>
+</div>
+
+<script>
+        close = document.getElementById('close');
+        close.addEventListener('click', function() {
+
+            cont = document.getElementById('testContainer');
+            result = document.getElementById('results');
+
+            cont.style.display = 'none';
+            result.style.display = 'flex'; })
         document.querySelectorAll('.answer-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const selectedAnswer = this.dataset.answer;
@@ -73,11 +121,23 @@
                     answerButtons[2].textContent = `В: ${data.answers[3].slice(3)}`;
                     answerButtons[3].textContent = `Г: ${data.answers[4].slice(3)}`;
 
+
+                    document.getElementById('diff').textContent = `Итоговая сложность ${data.difficulty.slice(0, -1)} \\ 100`;
+                    document.getElementById('totalRes').textContent = `Результат: ${data.progress}`;
+
+                    document.getElementById("results").style.display = 'none';
+
                     // Выводим информацию о прогрессе
                     console.log(`Текущий прогресс: ${data.progress}`);
+                    document.getElementById('total').textContent = "Прогресс: " + data.progress;
                 });
             });
+
         });
-    </script>
+
+
+
+
+</script>
 </body>
 </html>
