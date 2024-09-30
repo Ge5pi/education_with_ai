@@ -112,10 +112,16 @@
 
 <script>
 
+        counter=0;
+
         if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
-            const newUrl = `${window.location.origin}/test-selector`;
-            history.pushState(null, '', newUrl);
-            location.reload();
+            if(counter==2){
+                const newUrl = `${window.location.origin}/test-selector`;
+                history.pushState(null, '', newUrl);
+                location.reload();}
+            else{
+                counter+=1;
+            }
         }
 
         close = document.getElementById('close');
