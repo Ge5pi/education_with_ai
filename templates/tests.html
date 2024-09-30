@@ -149,12 +149,6 @@
                     document.getElementById('diff').textContent = `Итоговая сложность ${data.difficulty.slice(0, -1)} \\ 100`;
                     document.getElementById('totalRes').textContent = `Результат: ${data.progress}`;
 
-                    if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
-                        if(data.progress){
-                            document.getElementById('total').textContent = "Прогресс: " + data.progress;
-                            }
-                        }
-                        
         }
 
                     document.getElementById("results").style.display = 'none';
