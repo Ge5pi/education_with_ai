@@ -112,17 +112,7 @@
 
 <script>
 
-        counter=0;
 
-        if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
-            if(counter==2){
-                const newUrl = `${window.location.origin}/test-selector`;
-                history.pushState(null, '', newUrl);
-                location.reload();}
-            else{
-                counter+=1;
-            }
-        }
 
         close = document.getElementById('close');
         close.addEventListener('click', function() {
@@ -159,6 +149,14 @@
                     document.getElementById('diff').textContent = `Итоговая сложность ${data.difficulty.slice(0, -1)} \\ 100`;
                     document.getElementById('totalRes').textContent = `Результат: ${data.progress}`;
 
+                    if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+                        if(data.progress){
+                            document.getElementById('total').textContent = "Прогресс: " + data.progress;
+                            }
+                        }
+                        
+        }
+
                     document.getElementById("results").style.display = 'none';
 
                     // Выводим информацию о прогрессе
@@ -168,6 +166,7 @@
             });
 
         });
+
 
 
 
