@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="..\..\static\header.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script> window.chtlConfig = { chatbotId: "3887519629" } </script>
-    <script async data-id="3887519629" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+    <script async data-id="3887519629" id="chatling-embed-script" type="text/javascript"
+            src="https://chatling.ai/js/embed.js"></script>
     <script type="text/javascript" src="https://www.hostmath.com/Math/MathJax.js?config=OK"></script>
 
     <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
@@ -24,6 +25,7 @@
            load: ['input/tex', 'output/chtml']
        }
    };
+
 
     </script>
 
@@ -96,6 +98,7 @@
             }
         });
 
+
     </script>
 </head>
 <body>
@@ -103,7 +106,6 @@
     <div class="wrapper">
         <div class="logo"><a href="/"><img src="..\..\static\logo.png" alt=""></a></div>
         <ul class="nav-links">
-            <label for="close-btn" class="btn close-btn"><i class="fas fa-times"></i></label>
             <li><a href="/meets-subj1">Консультации</a></li>
             <li>
                 <a href="/subjects" class="desktop-item">Предметы</a>
@@ -111,6 +113,7 @@
             <li><a href="/faq">FAQ</a></li>
 
             <li><a href="/notifications">Уведомления</a></li>
+            <li><a href="/test-selector">Тесты</a></li>
         </ul>
         <ul class="nav-links">
             {% if not(current_user.is_authenticated) %}
@@ -129,8 +132,6 @@
         </ul>
     </div>
 </nav>
-
-
 <div class="sec-center">
     <input class="dropdown" type="checkbox" id="dropdown" name="dropdown"/>
     <label class="for-dropdown" for="dropdown">Меню<i class="uil uil-arrow-down"></i></label>
@@ -140,6 +141,7 @@
         <a href="/subjects">Предметы<i class="uil uil-arrow-right"></i></a>
         <a href="/faq">FAQ</a>
         <a href="/notifications">Уведомления</a>
+        <a href="/test-selector">Тесты</a>
         {% if not(current_user.is_authenticated) %}
         <a href="/index">Вход</a>
         <a href="/register">Регистрация</a>
