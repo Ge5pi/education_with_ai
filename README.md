@@ -6,9 +6,15 @@
 An innovative peer-to-peer learning platform connecting students from grades 5-9 with mentors from grades 10-12, powered by Flask and OpenAI's GPT technology.
 
 ## 🌟 Features
-- For Students
+### For Students
 - Create personalized learning session requests
 - Access comprehensive study materials across multiple subjects
 - Connect with experienced peer mentors
 - Join scheduled online conferences
 - Take AI-powered adaptive tests
+
+### For Mentors
+- Review and accept session requests
+- Schedule and manage learning sessions
+- Share conference links directly through the platform
+- Contribute to the learning community
