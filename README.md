@@ -27,3 +27,18 @@ An innovative peer-to-peer learning platform connecting students from grades 5-9
 - Mathematics
 - Physics
 - Chemistry
+
+
+## 🛠️ Technology Stack
+- Backend: Flask (Python)
+- Database: MySQL (with SQLAlchemy ORM)
+- Authentication: Flask-Login
+- AI Integration: OpenAI GPT
+- Security: Flask-WTF, CSRF Protection
+- Email: Flask-Mail
+
+## 💡 Key Components
+- User Management
+- Secure registration and login system
+- Role-based access control (student/mentor)
+- Password hashing for security
