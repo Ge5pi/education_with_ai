@@ -53,7 +53,29 @@ An innovative peer-to-peer learning platform connecting students from grades 5-9
     python main.py
 
 ## 💡 Key Components
-- User Management
+### User Management
 - Secure registration and login system
 - Role-based access control (student/mentor)
 - Password hashing for security
+
+### Session Management
+- Dynamic session scheduling
+- Conference link sharing
+- Real-time notifications
+
+### AI-Powered Testing
+- Adaptive difficulty levels
+- Progress tracking
+- Subject-specific question generation
+- Immediate feedback system
+
+## 🤝 Contributing
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (git checkout -b feature/AmazingFeature)
+3. Commit your changes (git commit -m 'Add some AmazingFeature')
+4. Push to the branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
+
+# Made with ❤️ for education
