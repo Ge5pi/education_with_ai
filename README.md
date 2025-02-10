@@ -18,3 +18,12 @@ An innovative peer-to-peer learning platform connecting students from grades 5-9
 - Schedule and manage learning sessions
 - Share conference links directly through the platform
 - Contribute to the learning community
+
+
+## Educational Resources
+### 📚 Comprehensive materials available for:
+- ICT
+- English
+- Mathematics
+- Physics
+- Chemistry
