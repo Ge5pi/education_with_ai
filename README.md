@@ -37,6 +37,21 @@ An innovative peer-to-peer learning platform connecting students from grades 5-9
 - Security: Flask-WTF, CSRF Protection
 - Email: Flask-Mail
 
+## 🚀 Installation
+#### 1. Clone the repository
+    git clone https://github.com/Ge5pi/education_with_ai.git
+    cd education_with_ai
+#### 2. Set up virtual environment
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+#### 3. Install dependencies
+    pip install -r requirements.txt
+#### 4. Set up environment variables
+    export API_KEY='your_openai_api_key'
+    # Add other necessary environment variables
+#### 5. Run the application
+    python main.py
+
 ## 💡 Key Components
 - User Management
 - Secure registration and login system
